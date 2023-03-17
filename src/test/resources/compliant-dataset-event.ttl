@@ -1,0 +1,44 @@
+@prefix adms: <http://www.w3.org/ns/adms#> . 
+@prefix cpsv: <http://purl.org/vocab/cpsv#> . 
+@prefix cpsvno: <https://data.norge.no/vocabulary/cpsvno#> . 
+@prefix dcat: <http://www.w3.org/ns/dcat#> . 
+@prefix dct: <http://purl.org/dc/terms/> . 
+@prefix dqv: <http://www.w3.org/ns/dqv#> . 
+@prefix mqa: <https://data.norge.no/vocabulary/dcatno-mqa#> . 
+@prefix eli: <http://data.europa.eu/eli/ontology#> . 
+@prefix foaf: <http://xmlns.com/foaf/0.1/> . 
+@prefix iso: <http://iso.org/25012/2008/dataquality/> . 
+@prefix oa: <http://www.w3.org/ns/oa#> . 
+@prefix prov: <http://www.w3.org/ns/prov#> . 
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> . 
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> . 
+@prefix schema: <http://schema.org/> . 
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> . 
+@prefix vcard: <http://www.w3.org/2006/vcard/ns#> . 
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcatapno: <https://data.norge.no/specification/dcat-ap-no/#> .
+
+<https://organization-catalog.staging.fellesdatakatalog.digdir.no/organizations/910244132>
+    rdf:type foaf:Agent ;
+    dct:identifier "910244132" ;
+    dct:title "RAMSUND OG ROGNAN REVISJON@nb" ;
+    skos:prefLabel "RAMSUND OG ROGNAN REVISJON@nb" .
+
+<https://registrering.staging.fellesdatakatalog.digdir.no/catalogs/910244132/datasets/d6750863-d436-4cef-abbb-e6c644f4887a>
+    rdf:type dcat:Dataset ;
+    mqa:hasAssessment <https://registrering.staging.fellesdatakatalog.digdir.no/catalogs/910244132/datasets/d6750863-d436-4cef-abbb-e6c644f4887a/assessment> ;
+    dct:description "Datasettet er DCAT 2.0 compliant"@nb ;
+    dct:identifier "https://registrering.staging.fellesdatakatalog.digdir.no/catalogs/910244132/datasets/d6750863-d436-4cef-abbb-e6c644f4887a" ;
+    dct:publisher <https://organization-catalog.staging.fellesdatakatalog.digdir.no/organizations/910244132> ;
+    dct:title "DCAT compliance test datasett"@nb ;
+    dcat:theme [ a skos:Concept ;
+        skos:prefLabel "A theme"
+    ] .
+
+<https://registrering.staging.fellesdatakatalog.digdir.no/catalogs/910244132>
+        rdf:type       dcat:Catalog ;
+        dct:identifier "https://registrering.staging.fellesdatakatalog.digdir.no/catalogs/910244132" ;
+        dct:publisher  <https://organization-catalog.staging.fellesdatakatalog.digdir.no/organizations/910244132> ;
+        dct:title      "Datakatalog for RAMSUND OG ROGNAN REVISJON"@nb ;
+        dct:description ""@nb ;
+        dcat:dataset   <https://registrering.staging.fellesdatakatalog.digdir.no/catalogs/910244132/datasets/d6750863-d436-4cef-abbb-e6c644f4887a>

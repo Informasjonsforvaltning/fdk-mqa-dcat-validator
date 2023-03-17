@@ -1,0 +1,46 @@
+logging:
+  level.root: WARN
+  level.no: ${LOG_LEVEL:INFO}
+  level.org.springframework: WARN
+  level.org.springframework.web: WARN
+  level.org.apache.jena.riot: ERROR
+  level.org.apache.kafka: INFO
+  level.io.confluent.kafka: INFO
+server:
+  port: 8080
+management:
+  endpoints:
+    web:
+      base-path: /
+      path-mapping:
+        info: ping
+        health: ready
+      exposure:
+        include: health, info, prometheus
+  metrics:
+    tags:
+      application: fdk-mqa-dcat-validator
+spring:
+  kafka:
+    bootstrap-servers:
+      - ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    properties:
+      schema.registry.url: ${KAFKA_SCHEMA_REGISTRY:http://localhost:8081}
+      specific.avro.reader: true
+      auto.register.schemas: false
+      use.latest.version: true
+      value.subject.name.strategy: io.confluent.kafka.serializers.subject.RecordNameStrategy
+      key.subject.name.strategy: io.confluent.kafka.serializers.subject.RecordNameStrategy
+    consumer:
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+    producer:
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+    listener:
+      ack-mode: manual_immediate
+application:
+  prop: 1
+---
+spring:
+  config.activate.on-profile: develop

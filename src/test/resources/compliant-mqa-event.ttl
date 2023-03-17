@@ -1,0 +1,10 @@
+@prefix mqa: <https://data.norge.no/vocabulary/dcatno-mqa#> .
+
+<https://registrering.staging.fellesdatakatalog.digdir.no/catalogs/910244132/datasets/d6750863-d436-4cef-abbb-e6c644f4887a/assessment> a mqa:DatasetAssessment ;
+    mqa:assessmentOf <https://registrering.staging.fellesdatakatalog.digdir.no/catalogs/910244132/datasets/d6750863-d436-4cef-abbb-e6c644f4887a> ;
+    mqa:containsQualityMeasurement [
+        a  <http://www.w3.org/ns/dqv#QualityMeasurement> ;
+            <http://www.w3.org/ns/dqv#computedOn> <https://registrering.staging.fellesdatakatalog.digdir.no/catalogs/910244132/datasets/d6750863-d436-4cef-abbb-e6c644f4887a> ;
+            <http://www.w3.org/ns/dqv#isMeasurementOf> mqa:dcatApCompliance ;
+            <http://www.w3.org/ns/dqv#value>true
+    ] .
