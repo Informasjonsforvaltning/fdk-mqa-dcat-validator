@@ -1,0 +1,35 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fdk-mqa-dcat-validator
+  labels:
+    app: fdk-mqa-dcat-validator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fdk-mqa-dcat-validator
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: fdk-mqa-dcat-validator
+      annotations:
+        prometheus.io/scrape: "false"
+    spec:
+      containers:
+        - name: fdk-mqa-dcat-validator
+          image: fdk-mqa-dcat-validator
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 8080
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080

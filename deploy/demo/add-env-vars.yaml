@@ -1,0 +1,23 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fdk-mqa-dcat-validator
+  labels:
+    app: fdk-mqa-dcat-validator
+spec:
+  template:
+    spec:
+      containers:
+        - name: fdk-mqa-dcat-validator
+          env:
+            - name: KAFKA_SCHEMA_REGISTRY
+              valueFrom:
+                secretKeyRef:
+                  name: fdk-metadata-quality-demo
+                  key: SCHEMA_REGISTRY
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              valueFrom:
+                secretKeyRef:
+                  name: fdk-metadata-quality-demo
+                  key: BROKERS

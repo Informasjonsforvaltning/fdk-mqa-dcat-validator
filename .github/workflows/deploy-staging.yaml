@@ -1,0 +1,57 @@
+name: Deploy to staging
+
+on:
+  pull_request:
+    types: [ready_for_review, opened, reopened, synchronize]
+    branches:
+      - main
+
+jobs:
+  run-tests:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup java jdk
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: 17
+
+      - name: Coverage test
+        run: mvn clean verify --no-transfer-progress
+
+      - name: Coverage upload
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage.txt
+
+  build:
+    name: Build fdk-mqa-dcat-validator when pull request is created
+    if: github.event.pull_request.draft == false
+    uses: Informasjonsforvaltning/workflows/.github/workflows/build-push.yaml@main
+    with:
+      app_name: fdk-mqa-dcat-validator
+      environment: staging
+      build_env: true
+      build_env_name: BINARY
+      build_env_value: fdk-mqa-dcat-validator
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GCP_SA_DIGDIR_FDK_GCR_KEY: ${{ secrets.GCP_SA_DIGDIR_FDK_GCR_KEY }}
+
+  deploy:
+    name: Deploy to staging environment with reusable workflow
+    if: github.event.pull_request.draft == false
+    needs: [ run-tests, build ]
+    uses: Informasjonsforvaltning/workflows/.github/workflows/kustomize-deploy.yaml@main
+    with:
+      app_name: fdk-mqa-dcat-validator
+      image: eu.gcr.io/digdir-fdk-infra/fdk-mqa-dcat-validator:staging_latest
+      environment: staging
+      cluster: digdir-fdk-dev
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      DIGDIR_FDK_AUTODEPLOY: ${{ secrets.DIGDIR_FDK_DEV_AUTODEPLOY }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

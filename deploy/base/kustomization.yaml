@@ -1,0 +1,11 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - deployment-fdk-mqa-dcat-validator.yaml
+  - service-fdk-mqa-dcat-validator.yaml
+
+images:
+  - name: fdk-mqa-dcat-validator
+    newName: eu.gcr.io/digdir-fdk-infra/fdk-mqa-dcat-validator
+    newTag: $(GIT_COMMIT_SHA)
