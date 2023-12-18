@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Setup java jdk
         uses: actions/setup-java@v3
         with:
@@ -43,7 +43,7 @@ jobs:
 
   deploy:
     name: Deploy to staging environment with reusable workflow
-    if: github.event.pull_request.draft == false
+    if: ${{ github.actor != 'dependabot[bot]' && github.event.pull_request.draft == false }}
     needs: [ run-tests, build ]
     uses: Informasjonsforvaltning/workflows/.github/workflows/kustomize-deploy.yaml@main
     with:
