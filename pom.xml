@@ -40,7 +40,7 @@
         <kotlin.version>1.9.10</kotlin.version>
         <testcontainers.version>1.19.0</testcontainers.version>
         <jena.version>4.9.0</jena.version>
-        <avro.version>1.11.2</avro.version>
+        <avro.version>1.11.3</avro.version>
     </properties>
 
     <dependencies>
