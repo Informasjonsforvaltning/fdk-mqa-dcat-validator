@@ -1,5 +1,6 @@
 package no.digdir.informasjonsforvaltning.fdk_mqa_dcat_validator.kafka
 
+import io.micrometer.core.instrument.Metrics
 import no.digdir.informasjonsforvaltning.fdk_mqa_dcat_validator.service.DcatComplianceService
 import no.fdk.mqa.DatasetEvent
 import no.fdk.mqa.DatasetEventType
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
+import java.time.Duration
+import kotlin.system.measureTimeMillis
 
 
 @Component
@@ -32,19 +35,27 @@ class KafkaDatasetEventConsumer {
         val event = record.value();
         if(event?.getType() == DatasetEventType.DATASET_HARVESTED) {
             try {
-                val mqaEvent = dcatComplianceService!!.validateDcatCompliance(event)
-                mqaEvent.let {
-                    // Send an MQA event of type DCAT_COMPLIANCE_CHECKED
-                    LOGGER.debug("Send MQAEvent with quality measurement - fdkId: " + event.getFdkId())
-                    kafkaProducer!!.sendMQAEvent(it!!)
+                val elapsed = measureTimeMillis {
+                    val mqaEvent = dcatComplianceService!!.validateDcatCompliance(event)
+                    mqaEvent.let {
+                        // Send an MQA event of type DCAT_COMPLIANCE_CHECKED
+                        LOGGER.debug("Send MQAEvent with quality measurement - fdkId: " + event.getFdkId())
+                        kafkaProducer!!.sendMQAEvent(it!!)
+                    }
+                    LOGGER.debug("Sending acknowledgement - fdkId: " + event.getFdkId())
+                    ack.acknowledge()
                 }
-                LOGGER.debug("Sending acknowledgement - fdkId: " + event.getFdkId())
-                ack.acknowledge()
+                Metrics.counter("processed_messages", "status", "success").increment()
+                Metrics.timer("processing_time").record(Duration.ofMillis(elapsed))
             } catch (e: Exception) {
                 LOGGER.error("Error processing message: " + e.message)
+                Metrics.counter("processed_messages", "status", "error").increment()
             }
         } else {
             LOGGER.debug("Message type not supported, skipping message - offset: " + record.offset())
+            Metrics.counter("processed_messages", "status", "skipped").increment()
+
+            ack.acknowledge()
         }
     }
 
