@@ -5,28 +5,40 @@
  */
 package no.fdk.mqa;
 
-import org.apache.avro.message.BinaryMessageDecoder;
-import org.apache.avro.message.BinaryMessageEncoder;
-import org.apache.avro.message.SchemaStore;
+import org.apache.avro.generic.GenericArray;
 import org.apache.avro.specific.SpecificData;
+import org.apache.avro.util.Utf8;
+import org.apache.avro.message.BinaryMessageEncoder;
+import org.apache.avro.message.BinaryMessageDecoder;
+import org.apache.avro.message.SchemaStore;
 
-@SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
 public class DatasetEvent extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
   private static final long serialVersionUID = 2153286289398729079L;
+
+
   public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"DatasetEvent\",\"namespace\":\"no.fdk.mqa\",\"fields\":[{\"name\":\"type\",\"type\":{\"type\":\"enum\",\"name\":\"DatasetEventType\",\"symbols\":[\"DATASET_HARVESTED\"]}},{\"name\":\"fdkId\",\"type\":\"string\"},{\"name\":\"graph\",\"type\":\"string\"},{\"name\":\"timestamp\",\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
-  private static SpecificData MODEL$ = new SpecificData();
+  private static final SpecificData MODEL$ = new SpecificData();
 
   private static final BinaryMessageEncoder<DatasetEvent> ENCODER =
-      new BinaryMessageEncoder<DatasetEvent>(MODEL$, SCHEMA$);
+      new BinaryMessageEncoder<>(MODEL$, SCHEMA$);
 
   private static final BinaryMessageDecoder<DatasetEvent> DECODER =
-      new BinaryMessageDecoder<DatasetEvent>(MODEL$, SCHEMA$);
+      new BinaryMessageDecoder<>(MODEL$, SCHEMA$);
+
+  /**
+   * Return the BinaryMessageEncoder instance used by this class.
+   * @return the message encoder used by this class
+   */
+  public static BinaryMessageEncoder<DatasetEvent> getEncoder() {
+    return ENCODER;
+  }
 
   /**
    * Return the BinaryMessageDecoder instance used by this class.
+   * @return the message decoder used by this class
    */
   public static BinaryMessageDecoder<DatasetEvent> getDecoder() {
     return DECODER;
@@ -35,26 +47,36 @@ public class DatasetEvent extends org.apache.avro.specific.SpecificRecordBase im
   /**
    * Create a new BinaryMessageDecoder instance for this class that uses the specified {@link SchemaStore}.
    * @param resolver a {@link SchemaStore} used to find schemas by fingerprint
+   * @return a BinaryMessageDecoder instance for this class backed by the given SchemaStore
    */
   public static BinaryMessageDecoder<DatasetEvent> createDecoder(SchemaStore resolver) {
-    return new BinaryMessageDecoder<DatasetEvent>(MODEL$, SCHEMA$, resolver);
+    return new BinaryMessageDecoder<>(MODEL$, SCHEMA$, resolver);
   }
 
-  /** Serializes this DatasetEvent to a ByteBuffer. */
+  /**
+   * Serializes this DatasetEvent to a ByteBuffer.
+   * @return a buffer holding the serialized data for this instance
+   * @throws java.io.IOException if this instance could not be serialized
+   */
   public java.nio.ByteBuffer toByteBuffer() throws java.io.IOException {
     return ENCODER.encode(this);
   }
 
-  /** Deserializes a DatasetEvent from a ByteBuffer. */
+  /**
+   * Deserializes a DatasetEvent from a ByteBuffer.
+   * @param b a byte buffer holding serialized data for an instance of this class
+   * @return a DatasetEvent instance decoded from the given buffer
+   * @throws java.io.IOException if the given bytes could not be deserialized into an instance of this class
+   */
   public static DatasetEvent fromByteBuffer(
       java.nio.ByteBuffer b) throws java.io.IOException {
     return DECODER.decode(b);
   }
 
-  @Deprecated public no.fdk.mqa.DatasetEventType type;
-  @Deprecated public java.lang.CharSequence fdkId;
-  @Deprecated public java.lang.CharSequence graph;
-  @Deprecated public long timestamp;
+  private no.fdk.mqa.DatasetEventType type;
+  private java.lang.CharSequence fdkId;
+  private java.lang.CharSequence graph;
+  private long timestamp;
 
   /**
    * Default constructor.  Note that this does not initialize fields
@@ -77,19 +99,26 @@ public class DatasetEvent extends org.apache.avro.specific.SpecificRecordBase im
     this.timestamp = timestamp;
   }
 
+  @Override
+  public org.apache.avro.specific.SpecificData getSpecificData() { return MODEL$; }
+
+  @Override
   public org.apache.avro.Schema getSchema() { return SCHEMA$; }
+
   // Used by DatumWriter.  Applications should not call.
+  @Override
   public java.lang.Object get(int field$) {
     switch (field$) {
     case 0: return type;
     case 1: return fdkId;
     case 2: return graph;
     case 3: return timestamp;
-    default: throw new org.apache.avro.AvroRuntimeException("Bad index");
+    default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
 
   // Used by DatumReader.  Applications should not call.
+  @Override
   @SuppressWarnings(value="unchecked")
   public void put(int field$, java.lang.Object value$) {
     switch (field$) {
@@ -97,7 +126,7 @@ public class DatasetEvent extends org.apache.avro.specific.SpecificRecordBase im
     case 1: fdkId = (java.lang.CharSequence)value$; break;
     case 2: graph = (java.lang.CharSequence)value$; break;
     case 3: timestamp = (java.lang.Long)value$; break;
-    default: throw new org.apache.avro.AvroRuntimeException("Bad index");
+    default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
 
@@ -108,6 +137,7 @@ public class DatasetEvent extends org.apache.avro.specific.SpecificRecordBase im
   public no.fdk.mqa.DatasetEventType getType() {
     return type;
   }
+
 
   /**
    * Sets the value of the 'type' field.
@@ -125,6 +155,7 @@ public class DatasetEvent extends org.apache.avro.specific.SpecificRecordBase im
     return fdkId;
   }
 
+
   /**
    * Sets the value of the 'fdkId' field.
    * @param value the value to set.
@@ -141,6 +172,7 @@ public class DatasetEvent extends org.apache.avro.specific.SpecificRecordBase im
     return graph;
   }
 
+
   /**
    * Sets the value of the 'graph' field.
    * @param value the value to set.
@@ -153,15 +185,16 @@ public class DatasetEvent extends org.apache.avro.specific.SpecificRecordBase im
    * Gets the value of the 'timestamp' field.
    * @return The value of the 'timestamp' field.
    */
-  public java.lang.Long getTimestamp() {
+  public long getTimestamp() {
     return timestamp;
   }
+
 
   /**
    * Sets the value of the 'timestamp' field.
    * @param value the value to set.
    */
-  public void setTimestamp(java.lang.Long value) {
+  public void setTimestamp(long value) {
     this.timestamp = value;
   }
 
@@ -179,7 +212,11 @@ public class DatasetEvent extends org.apache.avro.specific.SpecificRecordBase im
    * @return A new DatasetEvent RecordBuilder
    */
   public static no.fdk.mqa.DatasetEvent.Builder newBuilder(no.fdk.mqa.DatasetEvent.Builder other) {
-    return new no.fdk.mqa.DatasetEvent.Builder(other);
+    if (other == null) {
+      return new no.fdk.mqa.DatasetEvent.Builder();
+    } else {
+      return new no.fdk.mqa.DatasetEvent.Builder(other);
+    }
   }
 
   /**
@@ -188,12 +225,17 @@ public class DatasetEvent extends org.apache.avro.specific.SpecificRecordBase im
    * @return A new DatasetEvent RecordBuilder
    */
   public static no.fdk.mqa.DatasetEvent.Builder newBuilder(no.fdk.mqa.DatasetEvent other) {
-    return new no.fdk.mqa.DatasetEvent.Builder(other);
+    if (other == null) {
+      return new no.fdk.mqa.DatasetEvent.Builder();
+    } else {
+      return new no.fdk.mqa.DatasetEvent.Builder(other);
+    }
   }
 
   /**
    * RecordBuilder for DatasetEvent instances.
    */
+  @org.apache.avro.specific.AvroGenerated
   public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<DatasetEvent>
     implements org.apache.avro.data.RecordBuilder<DatasetEvent> {
 
@@ -204,7 +246,7 @@ public class DatasetEvent extends org.apache.avro.specific.SpecificRecordBase im
 
     /** Creates a new Builder */
     private Builder() {
-      super(SCHEMA$);
+      super(SCHEMA$, MODEL$);
     }
 
     /**
@@ -215,19 +257,19 @@ public class DatasetEvent extends org.apache.avro.specific.SpecificRecordBase im
       super(other);
       if (isValidValue(fields()[0], other.type)) {
         this.type = data().deepCopy(fields()[0].schema(), other.type);
-        fieldSetFlags()[0] = true;
+        fieldSetFlags()[0] = other.fieldSetFlags()[0];
       }
       if (isValidValue(fields()[1], other.fdkId)) {
         this.fdkId = data().deepCopy(fields()[1].schema(), other.fdkId);
-        fieldSetFlags()[1] = true;
+        fieldSetFlags()[1] = other.fieldSetFlags()[1];
       }
       if (isValidValue(fields()[2], other.graph)) {
         this.graph = data().deepCopy(fields()[2].schema(), other.graph);
-        fieldSetFlags()[2] = true;
+        fieldSetFlags()[2] = other.fieldSetFlags()[2];
       }
       if (isValidValue(fields()[3], other.timestamp)) {
         this.timestamp = data().deepCopy(fields()[3].schema(), other.timestamp);
-        fieldSetFlags()[3] = true;
+        fieldSetFlags()[3] = other.fieldSetFlags()[3];
       }
     }
 
@@ -236,7 +278,7 @@ public class DatasetEvent extends org.apache.avro.specific.SpecificRecordBase im
      * @param other The existing instance to copy.
      */
     private Builder(no.fdk.mqa.DatasetEvent other) {
-            super(SCHEMA$);
+      super(SCHEMA$, MODEL$);
       if (isValidValue(fields()[0], other.type)) {
         this.type = data().deepCopy(fields()[0].schema(), other.type);
         fieldSetFlags()[0] = true;
@@ -262,6 +304,7 @@ public class DatasetEvent extends org.apache.avro.specific.SpecificRecordBase im
     public no.fdk.mqa.DatasetEventType getType() {
       return type;
     }
+
 
     /**
       * Sets the value of the 'type' field.
@@ -302,6 +345,7 @@ public class DatasetEvent extends org.apache.avro.specific.SpecificRecordBase im
       return fdkId;
     }
 
+
     /**
       * Sets the value of the 'fdkId' field.
       * @param value The value of 'fdkId'.
@@ -341,6 +385,7 @@ public class DatasetEvent extends org.apache.avro.specific.SpecificRecordBase im
       return graph;
     }
 
+
     /**
       * Sets the value of the 'graph' field.
       * @param value The value of 'graph'.
@@ -376,9 +421,10 @@ public class DatasetEvent extends org.apache.avro.specific.SpecificRecordBase im
       * Gets the value of the 'timestamp' field.
       * @return The value.
       */
-    public java.lang.Long getTimestamp() {
+    public long getTimestamp() {
       return timestamp;
     }
+
 
     /**
       * Sets the value of the 'timestamp' field.
@@ -420,6 +466,8 @@ public class DatasetEvent extends org.apache.avro.specific.SpecificRecordBase im
         record.graph = fieldSetFlags()[2] ? this.graph : (java.lang.CharSequence) defaultValue(fields()[2]);
         record.timestamp = fieldSetFlags()[3] ? this.timestamp : (java.lang.Long) defaultValue(fields()[3]);
         return record;
+      } catch (org.apache.avro.AvroMissingFieldException e) {
+        throw e;
       } catch (java.lang.Exception e) {
         throw new org.apache.avro.AvroRuntimeException(e);
       }
@@ -444,4 +492,67 @@ public class DatasetEvent extends org.apache.avro.specific.SpecificRecordBase im
     READER$.read(this, SpecificData.getDecoder(in));
   }
 
+  @Override protected boolean hasCustomCoders() { return true; }
+
+  @Override public void customEncode(org.apache.avro.io.Encoder out)
+    throws java.io.IOException
+  {
+    out.writeEnum(this.type.ordinal());
+
+    out.writeString(this.fdkId);
+
+    out.writeString(this.graph);
+
+    out.writeLong(this.timestamp);
+
+  }
+
+  @Override public void customDecode(org.apache.avro.io.ResolvingDecoder in)
+    throws java.io.IOException
+  {
+    org.apache.avro.Schema.Field[] fieldOrder = in.readFieldOrderIfDiff();
+    if (fieldOrder == null) {
+      this.type = no.fdk.mqa.DatasetEventType.values()[in.readEnum()];
+
+      this.fdkId = in.readString(this.fdkId instanceof Utf8 ? (Utf8)this.fdkId : null);
+
+      this.graph = in.readString(this.graph instanceof Utf8 ? (Utf8)this.graph : null);
+
+      this.timestamp = in.readLong();
+
+    } else {
+      for (int i = 0; i < 4; i++) {
+        switch (fieldOrder[i].pos()) {
+        case 0:
+          this.type = no.fdk.mqa.DatasetEventType.values()[in.readEnum()];
+          break;
+
+        case 1:
+          this.fdkId = in.readString(this.fdkId instanceof Utf8 ? (Utf8)this.fdkId : null);
+          break;
+
+        case 2:
+          this.graph = in.readString(this.graph instanceof Utf8 ? (Utf8)this.graph : null);
+          break;
+
+        case 3:
+          this.timestamp = in.readLong();
+          break;
+
+        default:
+          throw new java.io.IOException("Corrupt ResolvingDecoder.");
+        }
+      }
+    }
+  }
 }
+
+
+
+
+
+
+
+
+
+

@@ -4,10 +4,12 @@
  * DO NOT EDIT DIRECTLY
  */
 package no.fdk.mqa;
-@SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
-public enum MQAEventType {
+public enum MQAEventType implements org.apache.avro.generic.GenericEnumSymbol<MQAEventType> {
   URLS_CHECKED, PROPERTIES_CHECKED, DCAT_COMPLIANCE_CHECKED, SCORE_CALCULATED  ;
   public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"enum\",\"name\":\"MQAEventType\",\"namespace\":\"no.fdk.mqa\",\"symbols\":[\"URLS_CHECKED\",\"PROPERTIES_CHECKED\",\"DCAT_COMPLIANCE_CHECKED\",\"SCORE_CALCULATED\"]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
+
+  @Override
+  public org.apache.avro.Schema getSchema() { return SCHEMA$; }
 }
