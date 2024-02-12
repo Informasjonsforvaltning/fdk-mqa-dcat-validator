@@ -27,22 +27,23 @@ class KafkaDatasetEventConsumer {
     @KafkaListener(
         topics = ["mqa-dataset-events"],
         groupId = "fdk-mqa-dcat-validator",
+        concurrency = "4",
         containerFactory = "kafkaListenerContainerFactory"
     )
     fun listen(record: ConsumerRecord<String, DatasetEvent>, ack: Acknowledgment) {
         LOGGER.debug("Received message - offset: " + record.offset())
 
-        val event = record.value();
-        if(event?.getType() == DatasetEventType.DATASET_HARVESTED) {
+        val event = record.value()
+        if(event?.type == DatasetEventType.DATASET_HARVESTED) {
             try {
                 val elapsed = measureTimeMillis {
                     val mqaEvent = dcatComplianceService!!.validateDcatCompliance(event)
                     mqaEvent.let {
                         // Send an MQA event of type DCAT_COMPLIANCE_CHECKED
-                        LOGGER.debug("Send MQAEvent with quality measurement - fdkId: " + event.getFdkId())
+                        LOGGER.debug("Send MQAEvent with quality measurement - fdkId: " + event.fdkId)
                         kafkaProducer!!.sendMQAEvent(it!!)
                     }
-                    LOGGER.debug("Sending acknowledgement - fdkId: " + event.getFdkId())
+                    LOGGER.debug("Sending acknowledgement - fdkId: " + event.fdkId)
                     ack.acknowledge()
                 }
                 Metrics.counter("processed_messages", "status", "success").increment()
