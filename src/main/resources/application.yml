@@ -4,8 +4,8 @@ logging:
   level.org.springframework: WARN
   level.org.springframework.web: WARN
   level.org.apache.jena.riot: ERROR
-  level.org.apache.kafka: INFO
-  level.io.confluent.kafka: INFO
+  level.org.apache.kafka: ERROR
+  level.io.confluent.kafka: ERROR
 server:
   port: 8080
 management:
