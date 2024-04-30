@@ -1,6 +1,6 @@
-package no.digdir.informasjonsforvaltning.fdk_mqa_dcat_validator.service
+package no.digdir.fdk.mqa.dcatvalidator.service
 
-import no.digdir.informasjonsforvaltning.fdk_mqa_dcat_validator.rdf.*
+import no.digdir.fdk.mqa.dcatvalidator.rdf.*
 import no.fdk.mqa.DatasetEvent
 import no.fdk.mqa.DatasetEventType
 import no.fdk.mqa.MQAEvent
@@ -75,7 +75,7 @@ class DcatComplianceService {
                     assessmentGraph,
                     datasetEvent.getTimestamp())
 
-                LOGGER.debug("$mqaEvent")
+                LOGGER.debug("{}", mqaEvent)
                 mqaEvent
             }
         }

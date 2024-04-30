@@ -1,4 +1,4 @@
-package no.digdir.informasjonsforvaltning.fdk_mqa_dcat_validator.rdf
+package no.digdir.fdk.mqa.dcatvalidator.rdf
 
 import org.apache.jena.rdf.model.Property
 import org.apache.jena.rdf.model.Resource
