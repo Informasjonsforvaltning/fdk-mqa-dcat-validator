@@ -1,4 +1,4 @@
-package no.digdir.informasjonsforvaltning.fdk_mqa_dcat_validator.configuration
+package no.digdir.fdk.mqa.dcatvalidator.configuration
 
 import no.fdk.mqa.DatasetEvent
 import org.springframework.context.annotation.Bean

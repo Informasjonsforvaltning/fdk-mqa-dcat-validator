@@ -1,4 +1,4 @@
-package no.digdir.informasjonsforvaltning.fdk_mqa_dcat_validator.rdf
+package no.digdir.fdk.mqa.dcatvalidator.rdf
 
 import org.apache.jena.graph.Graph
 import org.apache.jena.rdf.model.Model
@@ -16,8 +16,8 @@ import java.nio.charset.StandardCharsets
 
 
 fun validate(data: Graph, shapes: Graph): ValidationReport {
-    val shapes: Shapes = Shapes.parse(shapes)
-    return ShaclValidator.get().validate(shapes, data)
+    val parsedShapes: Shapes = Shapes.parse(shapes)
+    return ShaclValidator.get().validate(parsedShapes, data)
 }
 
 fun loadModel(graph: String): Model {

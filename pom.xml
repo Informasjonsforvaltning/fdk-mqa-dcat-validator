@@ -5,7 +5,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>no.digdir.informasjonsforvaltning</groupId>
+    <groupId>no.digdir.fdk</groupId>
     <artifactId>fdk-mqa-dcat-validator</artifactId>
     <name>FDK MQA DCAT Validator</name>
     <version>1.0.0</version>
@@ -59,6 +59,10 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
         </dependency>
@@ -66,29 +70,23 @@
         <dependency>
             <groupId>io.confluent</groupId>
             <artifactId>kafka-schema-registry-client</artifactId>
-            <version>7.6.0</version>
+            <version>7.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-avro-serializer</artifactId>
+            <version>7.6.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.avro</groupId>
             <artifactId>avro</artifactId>
             <version>${avro.version}</version>
         </dependency>
-        <dependency>
-            <groupId>io.confluent</groupId>
-            <artifactId>kafka-avro-serializer</artifactId>
-            <version>7.6.0</version>
-        </dependency>
 
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
             <scope>runtime</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <version>3.6.1</version>
         </dependency>
 
         <dependency>
@@ -141,6 +139,13 @@
             <version>${jena.version}</version>
         </dependency>
 
+        <!-- Resilience4j -->
+        <dependency>
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-spring-boot3</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+
         <!-- TEST -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -152,6 +157,12 @@
                     <artifactId>android-json</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>io.mockk</groupId>
+            <artifactId>mockk-jvm</artifactId>
+            <version>1.13.10</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>

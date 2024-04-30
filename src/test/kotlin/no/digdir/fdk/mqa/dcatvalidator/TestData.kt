@@ -1,4 +1,4 @@
-package no.digdir.informasjonsforvaltning.fdk_mqa_dcat_validator
+package no.digdir.fdk.mqa.dcatvalidator
 
 class TestData {
     companion object {

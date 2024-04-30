@@ -1,9 +1,9 @@
-package no.digdir.informasjonsforvaltning.fdk_mqa_dcat_validator
+package no.digdir.fdk.mqa.dcatvalidator.service
 
-import no.digdir.informasjonsforvaltning.fdk_mqa_dcat_validator.rdf.DQV
-import no.digdir.informasjonsforvaltning.fdk_mqa_dcat_validator.rdf.loadModel
-import no.digdir.informasjonsforvaltning.fdk_mqa_dcat_validator.rdf.writeToString
-import no.digdir.informasjonsforvaltning.fdk_mqa_dcat_validator.service.DcatComplianceService
+import no.digdir.fdk.mqa.dcatvalidator.TestData
+import no.digdir.fdk.mqa.dcatvalidator.rdf.DQV
+import no.digdir.fdk.mqa.dcatvalidator.rdf.loadModel
+import no.digdir.fdk.mqa.dcatvalidator.rdf.writeToString
 import no.fdk.mqa.DatasetEvent
 import no.fdk.mqa.DatasetEventType
 import no.fdk.mqa.MQAEventType
@@ -11,7 +11,6 @@ import org.apache.jena.riot.Lang
 import org.apache.jena.vocabulary.RDF
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
-import kotlin.test.Ignore
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
