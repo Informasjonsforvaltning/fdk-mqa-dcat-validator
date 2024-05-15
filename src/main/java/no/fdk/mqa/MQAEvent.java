@@ -17,7 +17,7 @@ public class MQAEvent extends org.apache.avro.specific.SpecificRecordBase implem
   private static final long serialVersionUID = -4866041095392050199L;
 
 
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"MQAEvent\",\"namespace\":\"no.fdk.mqa\",\"fields\":[{\"name\":\"type\",\"type\":{\"type\":\"enum\",\"name\":\"MQAEventType\",\"symbols\":[\"URLS_CHECKED\",\"PROPERTIES_CHECKED\",\"DCAT_COMPLIANCE_CHECKED\",\"SCORE_CALCULATED\"]}},{\"name\":\"fdkId\",\"type\":\"string\"},{\"name\":\"graph\",\"type\":\"string\"},{\"name\":\"timestamp\",\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"MQAEvent\",\"namespace\":\"no.fdk.mqa\",\"fields\":[{\"name\":\"type\",\"type\":{\"type\":\"enum\",\"name\":\"MQAEventType\",\"symbols\":[\"URLS_CHECKED\",\"PROPERTIES_CHECKED\",\"DCAT_COMPLIANCE_CHECKED\",\"SCORE_CALCULATED\"]}},{\"name\":\"fdkId\",\"type\":\"string\"},{\"name\":\"graph\",\"type\":\"string\"},{\"name\":\"timestamp\",\"type\":\"long\"}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static final SpecificData MODEL$ = new SpecificData();
