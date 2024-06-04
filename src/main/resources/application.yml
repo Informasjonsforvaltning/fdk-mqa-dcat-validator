@@ -35,6 +35,8 @@ spring:
       auto-offset-reset: earliest
       enable-auto-commit: false
       value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+      properties:
+        max.partition.fetch.bytes: 2097152
     producer:
       value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
     listener:
