@@ -13,7 +13,7 @@ class KafkaMqaEventProducer(
     private val kafkaTemplate: KafkaTemplate<String, MQAEvent>
 ) {
     fun sendMQAEvent(mqaEvent: MQAEvent) {
-        kafkaTemplate.send("mqa-events", mqaEvent).handle { result, exception ->
+        kafkaTemplate.send("mqa-events", mqaEvent.fdkId.toString(), mqaEvent).handle { result, exception ->
             if (exception != null) {
                 LOGGER.error("Error sending MQA event: " + exception.message)
                 Metrics.counter("produced_messages", "status", "error").increment()
