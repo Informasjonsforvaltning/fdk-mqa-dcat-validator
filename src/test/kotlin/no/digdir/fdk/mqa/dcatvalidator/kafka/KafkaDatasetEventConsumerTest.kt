@@ -40,7 +40,7 @@ class KafkaDatasetEventConsumerTest {
             timestamp
         )
         every { dcatComplianceService.validateDcatCompliance(any()) } returns validDcatMQAEvent
-        every { kafkaTemplate.send(any(), any()) } returns CompletableFuture()
+        every { kafkaTemplate.send(any(), any(), any()) } returns CompletableFuture()
         every { ack.acknowledge() } returns Unit
         every { ack.nack(Duration.ZERO) } returns Unit
 
@@ -53,6 +53,8 @@ class KafkaDatasetEventConsumerTest {
         verify {
             kafkaTemplate.send(withArg {
                 assertEquals("mqa-events", it)
+            }, withArg {
+                assertEquals(datasetEvent.fdkId, it)
             }, withArg {
                 assertEquals(datasetEvent.fdkId, it.fdkId)
                 assertEquals(MQAEventType.DCAT_COMPLIANCE_CHECKED, it.type)
@@ -75,7 +77,7 @@ class KafkaDatasetEventConsumerTest {
         )
 
         every { dcatComplianceService.validateDcatCompliance(any()) } returns invalidDcatMQAEvent
-        every { kafkaTemplate.send(any(), any()) } returns CompletableFuture()
+        every { kafkaTemplate.send(any(), any(), any()) } returns CompletableFuture()
         every { ack.acknowledge() } returns Unit
         every { ack.nack(Duration.ZERO) } returns Unit
 
@@ -88,6 +90,8 @@ class KafkaDatasetEventConsumerTest {
         verify {
             kafkaTemplate.send(withArg {
                 assertEquals("mqa-events", it)
+            }, withArg {
+                assertEquals(datasetEvent.fdkId, it)
             }, withArg {
                 assertEquals(datasetEvent.fdkId, it.fdkId)
                 assertEquals(MQAEventType.DCAT_COMPLIANCE_CHECKED, it.type)
@@ -110,7 +114,7 @@ class KafkaDatasetEventConsumerTest {
             ack = ack
         )
 
-        verify(exactly = 0) { kafkaTemplate.send(any(), any()) }
+        verify(exactly = 0) { kafkaTemplate.send(any(), any(), any()) }
         verify(exactly = 1) { ack.nack(Duration.ZERO) }
         verify(exactly = 0) { ack.acknowledge() }
         confirmVerified(kafkaTemplate, ack)
