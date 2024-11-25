@@ -7,5 +7,5 @@ resources:
 
 images:
   - name: fdk-mqa-dcat-validator
-    newName: eu.gcr.io/digdir-fdk-infra/fdk-mqa-dcat-validator
+    newName: ghcr.io/informasjonsforvaltning/fdk-mqa-dcat-validator
     newTag: $(GIT_COMMIT_SHA)
