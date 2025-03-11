@@ -19,7 +19,7 @@ jobs:
 
   build:
     name: Build fdk-mqa-dcat-validator when pull request is created
-    if: github.event.pull_request.draft == false
+    if: ${{ github.actor != 'dependabot[bot]' && github.event.pull_request.draft == false }}
     uses: Informasjonsforvaltning/workflows/.github/workflows/build-push.yaml@main
     with:
       app_name: fdk-mqa-dcat-validator
