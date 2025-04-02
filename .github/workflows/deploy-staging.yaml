@@ -2,42 +2,30 @@ name: Deploy to staging
 
 on:
   pull_request:
-    types: [ready_for_review, opened, reopened, synchronize]
+    types: [ ready_for_review, opened, reopened, synchronize ]
     branches:
       - main
 
 jobs:
-  run-tests:
-    name: Run tests
-    uses: Informasjonsforvaltning/workflows/.github/workflows/coverage-maven.yaml@main
-    with:
-      coverage_file_path: ./coverage.txt
-      java_version: 17
-    secrets:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
-  build:
-    name: Build fdk-mqa-dcat-validator when pull request is created
+  build-fdk-mqa-dcat-validator:
+    name: Build when pull request is created
     if: ${{ github.actor != 'dependabot[bot]' && github.event.pull_request.draft == false }}
     uses: Informasjonsforvaltning/workflows/.github/workflows/build-push.yaml@main
     with:
       app_name: fdk-mqa-dcat-validator
       environment: staging
-      build_env: true
-      build_env_name: BINARY
-      build_env_value: fdk-mqa-dcat-validator
+      java_version: '21'
+      coverage_file_path: ./target/site/jacoco/jacoco.xml
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   deploy:
-    name: Deploy to staging environment with reusable workflow
+    name: Deploy to staging environment
     if: ${{ github.actor != 'dependabot[bot]' && github.event.pull_request.draft == false }}
-    needs: [ run-tests, build ]
+    needs: [ build-fdk-mqa-dcat-validator ]
     uses: Informasjonsforvaltning/workflows/.github/workflows/kustomize-deploy.yaml@main
     with:
       app_name: fdk-mqa-dcat-validator
-      image: eu.gcr.io/digdir-fdk-infra/fdk-mqa-dcat-validator:staging_latest
       environment: staging
       cluster: digdir-fdk-dev
     secrets:
