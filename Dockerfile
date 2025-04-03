@@ -1,24 +1,19 @@
-FROM eclipse-temurin:21-jre-alpine
+FROM maven:3-openjdk-17-slim AS build
+WORKDIR /app
+COPY pom.xml ./
+COPY src ./src
+COPY kafka ./kafka
+RUN mvn clean package --no-transfer-progress -DskipTests
+RUN mvn versions:display-dependency-updates --no-transfer-progress
 
-ARG USER=default
-ENV HOME=/home/$USER
-
+FROM eclipse-temurin:17-jre-jammy
 ENV TZ=Europe/Oslo
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
-# install sudo as root
-RUN apk update && apk add --no-cache sudo snappy
-RUN adduser -D $USER && \
-      echo "$USER ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$USER && \
-      chmod 0440 /etc/sudoers.d/$USER
-
-USER $USER
-WORKDIR $HOME
-
-COPY --chown=app:app /target/app.jar app.jar
-
-# Run the application
-CMD ["sh", "-c", "java -jar -Xss10m \
-         -Dorg.xerial.snappy.use.systemlib=true \
-         -Dorg.xerial.snappy.lib.path=/usr/lib/libsnappy.so.1 \
-         $JAVA_OPTS app.jar"]
+WORKDIR /app
+RUN addgroup --gid 1001 --system app && \
+  adduser --uid 1001 --system app --gid 1001 && \
+  chown -R app:app /app && \
+  chmod 770 /app
+USER app:app
+COPY --chown=app:app --from=build /app/target/fdk-mqa-dcat-validator.jar ./
+CMD java -Xss10m -jar fdk-mqa-dcat-validator.jar

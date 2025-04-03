@@ -7,21 +7,32 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-fdk-mqa-dcat-validator:
-    name: Build when pull request is created
+  run-tests:
+    name: Run tests
+    uses: Informasjonsforvaltning/workflows/.github/workflows/coverage-maven.yaml@main
+    with:
+      coverage_file_path: ./coverage.txt
+      java_version: 17
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  build:
+    name: Build fdk-mqa-dcat-validator when pull request is created
     uses: Informasjonsforvaltning/workflows/.github/workflows/build-push.yaml@main
     with:
       app_name: fdk-mqa-dcat-validator
       environment: prod
-      java_version: '21'
-      coverage_file_path: ./target/site/jacoco/jacoco.xml
+      build_env: true
+      build_env_name: BINARY
+      build_env_value: fdk-mqa-dcat-validator
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   deploy-prod:
     name: Deploy to prod environment with reusable workflow
     if: github.event.pull_request.draft == false
-    needs: [ build-fdk-mqa-dcat-validator ]
+    needs: [ run-tests, build ]
     uses: Informasjonsforvaltning/workflows/.github/workflows/kustomize-deploy.yaml@main
     with:
       app_name: fdk-mqa-dcat-validator
@@ -35,7 +46,7 @@ jobs:
   deploy-demo:
     name: Deploy to demo environment with reusable workflow
     if: github.event.pull_request.draft == false
-    needs: [ build-fdk-mqa-dcat-validator ]
+    needs: [ run-tests, build ]
     uses: Informasjonsforvaltning/workflows/.github/workflows/kustomize-deploy.yaml@main
     with:
       app_name: fdk-mqa-dcat-validator
