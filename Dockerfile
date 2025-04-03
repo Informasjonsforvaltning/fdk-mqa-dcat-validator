@@ -16,4 +16,5 @@ RUN addgroup --gid 1001 --system app && \
   chmod 770 /app
 USER app:app
 COPY --chown=app:app --from=build /app/target/fdk-mqa-dcat-validator.jar ./
-CMD java -Xss10m -jar fdk-mqa-dcat-validator.jar
+
+CMD ["sh", "-c", "java -jar -Xss10m $JAVA_OPTS fdk-mqa-dcat-validator.jar"]
