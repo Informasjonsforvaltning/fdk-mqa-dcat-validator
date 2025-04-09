@@ -23,6 +23,7 @@ jobs:
     with:
       app_name: fdk-mqa-dcat-validator
       environment: prod
+      gh_environment: prod
       build_env: true
       build_env_name: BINARY
       build_env_value: fdk-mqa-dcat-validator
@@ -37,6 +38,7 @@ jobs:
     with:
       app_name: fdk-mqa-dcat-validator
       environment: prod
+      gh_environment: prod
       cluster: digdir-fdk-prod
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -51,6 +53,7 @@ jobs:
     with:
       app_name: fdk-mqa-dcat-validator
       environment: demo
+      gh_environment: demo
       cluster: digdir-fdk-dev
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
