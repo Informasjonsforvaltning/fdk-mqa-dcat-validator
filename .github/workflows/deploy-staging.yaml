@@ -24,6 +24,7 @@ jobs:
     with:
       app_name: fdk-mqa-dcat-validator
       environment: staging
+      gh_environment: staging
       build_env: true
       build_env_name: BINARY
       build_env_value: fdk-mqa-dcat-validator
@@ -39,6 +40,7 @@ jobs:
       app_name: fdk-mqa-dcat-validator
       image: eu.gcr.io/digdir-fdk-infra/fdk-mqa-dcat-validator:staging_latest
       environment: staging
+      gh_environment: staging
       cluster: digdir-fdk-dev
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
