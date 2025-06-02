@@ -17,6 +17,6 @@ RUN addgroup --gid 1001 --system app && \
 USER app:app
 COPY --chown=app:app --from=build /app/target/fdk-mqa-dcat-validator.jar ./
 
-ENV JAVA_OPTS="-XX:MaxRAMPercentage=75.0 -Xss1m"
+ENV JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=75.0 -Xss1m"
 
-CMD ["sh", "-c", "java $JAVA_OPTS -jar fdk-mqa-dcat-validator.jar"]
+CMD ["sh", "-c", "java -jar fdk-mqa-dcat-validator.jar"]
