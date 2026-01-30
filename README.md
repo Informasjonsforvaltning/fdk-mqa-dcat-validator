@@ -10,7 +10,7 @@ specific context on this application, see the **Metadata Quality** subsystem sec
 
 ## Requirements
 
-- Java 17
+- Java 21
 - Maven
 - Docker
 

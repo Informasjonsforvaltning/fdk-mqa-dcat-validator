@@ -1,4 +1,4 @@
-FROM maven:3-openjdk-17-slim AS build
+FROM maven:3-eclipse-temurin-21-alpine AS build
 WORKDIR /app
 COPY pom.xml ./
 COPY src ./src
@@ -6,7 +6,7 @@ COPY kafka ./kafka
 RUN mvn clean package --no-transfer-progress -DskipTests
 RUN mvn versions:display-dependency-updates --no-transfer-progress
 
-FROM eclipse-temurin:17-jre-jammy
+FROM eclipse-temurin:21-jre-jammy
 ENV TZ=Europe/Oslo
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 WORKDIR /app
