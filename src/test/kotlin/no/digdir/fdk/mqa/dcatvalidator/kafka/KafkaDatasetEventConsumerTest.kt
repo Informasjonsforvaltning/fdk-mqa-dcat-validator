@@ -1,5 +1,6 @@
 package no.digdir.fdk.rdf.parse.eventpublisher.kafka
 
+import io.github.resilience4j.circuitbreaker.CircuitBreaker
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
@@ -27,7 +28,7 @@ class KafkaDatasetEventConsumerTest {
     private val kafkaTemplate: KafkaTemplate<String, MQAEvent> = mockk()
     private val ack: Acknowledgment = mockk()
     private val kafkaMqaEventProducer = KafkaMqaEventProducer(kafkaTemplate)
-    private val circuitBreaker = KafkaDatasetEventCircuitBreaker(dcatComplianceService, kafkaMqaEventProducer)
+    private val circuitBreaker = KafkaDatasetEventCircuitBreaker(dcatComplianceService, kafkaMqaEventProducer, CircuitBreaker.ofDefaults("test-cb"))
     private val kafkaDatasetEventConsumer = KafkaDatasetEventConsumer(circuitBreaker)
 
     @Test

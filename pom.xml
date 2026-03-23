@@ -14,7 +14,7 @@
     <parent>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-parent</artifactId>
-      <version>3.5.10</version>
+      <version>4.0.4</version>
       <relativePath/>
     </parent>
 
@@ -38,9 +38,9 @@
         <!--end standard properties-->
 
         <kotlin.version>2.2.21</kotlin.version>
-        <jena.version>5.6.0</jena.version>
+        <jena.version>6.0.0</jena.version>
         <avro.version>1.12.1</avro.version>
-        <confluent.version>8.1.1</confluent.version>
+        <confluent.version>8.2.0</confluent.version>
     </properties>
 
     <dependencies>
@@ -57,10 +57,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.kafka</groupId>
@@ -142,8 +138,8 @@
         <!-- Resilience4j -->
         <dependency>
             <groupId>io.github.resilience4j</groupId>
-            <artifactId>resilience4j-spring-boot3</artifactId>
-            <version>2.3.0</version>
+            <artifactId>resilience4j-circuitbreaker</artifactId>
+            <version>2.4.0</version>
         </dependency>
 
         <!-- TEST -->
@@ -251,7 +247,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.14.1</version>
+                <version>3.15.0</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>

@@ -17,7 +17,7 @@ class KafkaDatasetEventConsumer(
         groupId = "fdk-mqa-dcat-validator",
         concurrency = "4",
         containerFactory = "kafkaListenerContainerFactory",
-        id = "mqa-dataset"
+        id = MQA_DATASET_LISTENER_ID
     )
     fun listen(record: ConsumerRecord<String, DatasetEvent>, ack: Acknowledgment) {
         try {
@@ -26,5 +26,9 @@ class KafkaDatasetEventConsumer(
         } catch (e: Exception) {
             ack.nack(Duration.ZERO)
         }
+    }
+
+    companion object {
+        const val MQA_DATASET_LISTENER_ID = "mqa-dataset"
     }
 }
