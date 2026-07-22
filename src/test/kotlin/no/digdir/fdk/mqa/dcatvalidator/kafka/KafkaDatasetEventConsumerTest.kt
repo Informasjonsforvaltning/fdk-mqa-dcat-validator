@@ -108,4 +108,42 @@ class KafkaDatasetEventConsumerTest {
         verify(exactly = 0) { ack.acknowledge() }
         confirmVerified(kafkaTemplate, ack)
     }
+
+    @Test
+    fun `listen should acknowledge and skip when event is null`() {
+        every { ack.acknowledge() } returns Unit
+
+        kafkaDatasetEventConsumer.listen(
+            record = ConsumerRecord("dataset-events", 0, 0, "fdk-id", null),
+            ack = ack,
+        )
+
+        verify(exactly = 0) { dcatComplianceService.validateDcatCompliance(any()) }
+        verify(exactly = 0) { kafkaTemplate.send(any(), any(), any()) }
+        verify(exactly = 1) { ack.acknowledge() }
+        confirmVerified(dcatComplianceService, kafkaTemplate, ack)
+    }
+
+    @Test
+    fun `listen should acknowledge without producing when validation returns null`() {
+        every { dcatComplianceService.validateDcatCompliance(any()) } returns null
+        every { ack.acknowledge() } returns Unit
+
+        val datasetEvent =
+            DatasetEvent(
+                DatasetEventType.DATASET_HARVESTED,
+                "fdk-id-skip",
+                "uri",
+                System.currentTimeMillis(),
+            )
+        kafkaDatasetEventConsumer.listen(
+            record = ConsumerRecord("dataset-events", 0, 0, "fdk-id-skip", datasetEvent),
+            ack = ack,
+        )
+
+        verify(exactly = 1) { dcatComplianceService.validateDcatCompliance(datasetEvent) }
+        verify(exactly = 0) { kafkaTemplate.send(any(), any(), any()) }
+        verify(exactly = 1) { ack.acknowledge() }
+        confirmVerified(dcatComplianceService, kafkaTemplate, ack)
+    }
 }
