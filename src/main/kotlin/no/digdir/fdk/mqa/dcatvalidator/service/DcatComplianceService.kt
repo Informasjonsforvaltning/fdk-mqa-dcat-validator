@@ -2,83 +2,78 @@ package no.digdir.fdk.mqa.dcatvalidator.service
 
 import no.digdir.fdk.mqa.dcatvalidator.rdf.*
 import no.fdk.mqa.DatasetEvent
-import no.fdk.mqa.DatasetEventType
 import no.fdk.mqa.MQAEvent
 import no.fdk.mqa.MQAEventType
-import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.ModelFactory
-import org.apache.jena.rdf.model.Resource
 import org.apache.jena.riot.Lang
-import org.apache.jena.shacl.ValidationReport
+import org.apache.jena.shacl.Shapes
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import java.util.function.Consumer
 
 @Service
 class DcatComplianceService {
 
+    private val shapes: Shapes by lazy {
+        val shapesResource = javaClass.getResource(DCAT_AP_NO_SHAPES)
+            ?: throw IllegalStateException("Unable to load shapes from $DCAT_AP_NO_SHAPES")
+        parseShapes(loadModel(shapesResource.readText()).graph)
+    }
+
     fun validateDcatCompliance(datasetEvent: DatasetEvent): MQAEvent? {
-        if(datasetEvent.getType() != DatasetEventType.DATASET_HARVESTED) {
-            throw Exception("Invalid dataset event type")
-        }
+        LOGGER.debug("Validate DCAT-AP compliance - fdkId: {}", datasetEvent.fdkId)
 
-        LOGGER.debug("Validate DCAT-AP compliance - fdkId: " + datasetEvent.getFdkId())
+        val dataModel = loadModel(datasetEvent.graph.toString())
+        val validationReport = validate(dataModel.graph, shapes)
 
-        val dataModel = loadModel(datasetEvent.getGraph().toString())
-
-        val shapesModel = DcatComplianceService::class.java.getResource(DCAT_AP_NO_SHAPES)
-            ?.let { loadModel(it.readText()) }
-            ?: run {
-                throw Exception("Unable to load shapes")
-            }
-
-        val validationReport: ValidationReport = validate(dataModel.graph, shapesModel.graph)
-
-        if(LOGGER.isDebugEnabled) {
-            if(validationReport.conforms()) {
-                LOGGER.debug("Dataset is DCAT compliant - fdkId: " + datasetEvent.getFdkId())
+        if (LOGGER.isDebugEnabled) {
+            if (validationReport.conforms()) {
+                LOGGER.debug("Dataset is DCAT compliant - fdkId: {}", datasetEvent.fdkId)
             } else {
-                LOGGER.debug("Dataset is not DCAT compliant - fdkId: " + datasetEvent.getFdkId())
-                validationReport.entries.forEach(Consumer {
-                    LOGGER.debug("Report - Value: ${it.value()?.toString()}")
-                    LOGGER.debug("Report - Path: ${it.resultPath()?.toString()}")
-                    LOGGER.debug("Report - Message: ${it.message()}")
-                })
+                LOGGER.debug("Dataset is not DCAT compliant - fdkId: {}", datasetEvent.fdkId)
+                validationReport.entries.forEach { entry ->
+                    LOGGER.debug("Report - Value: {}", entry.value()?.toString())
+                    LOGGER.debug("Report - Path: {}", entry.resultPath()?.toString())
+                    LOGGER.debug("Report - Message: {}", entry.message())
+                }
             }
         }
 
-        // Create assessment model which we will be included in the MQA event
-        val assessmentModel: Model = ModelFactory.createDefaultModel()
-        val datasetResource: Resource? = dataModel.getDatasetResource()
-        if(datasetResource == null) {
-            LOGGER.warn("Model does not contain resource of type Dataset, skipping message - fdkId: ${datasetEvent.getFdkId()}")
+        val datasetResource = dataModel.getDatasetResource()
+        if (datasetResource == null) {
+            LOGGER.warn(
+                "Model does not contain resource of type Dataset, skipping message - fdkId: {}",
+                datasetEvent.fdkId
+            )
+            return null
         }
 
-        return datasetResource?.let { dr ->
-            // Extract the existing assessment for this dataset
-            val assessmentResource: Resource? = dataModel.getAssessmentResource(dr)
-            if(assessmentResource == null) {
-                LOGGER.warn("Model does not contain resource of type Assessment, skipping message - fdkId: ${datasetEvent.getFdkId()}")
-            }
-
-            assessmentResource?.let { ar ->
-                assessmentModel.addDatasetAssessment(ar, dr)
-                assessmentModel.addComplianceQualityMeasurement(ar, dr, validationReport.conforms())
-
-                // Output graph as Turtle
-                val assessmentGraph = assessmentModel.writeToString(Lang.TURTLE)
-
-                val mqaEvent = MQAEvent(
-                    MQAEventType.DCAT_COMPLIANCE_CHECKED,
-                    datasetEvent.getFdkId(),
-                    assessmentGraph,
-                    datasetEvent.getTimestamp())
-
-                LOGGER.debug("{}", mqaEvent)
-                mqaEvent
-            }
+        val assessmentResource = dataModel.getAssessmentResource(datasetResource)
+        if (assessmentResource == null) {
+            LOGGER.warn(
+                "Model does not contain resource of type Assessment, skipping message - fdkId: {}",
+                datasetEvent.fdkId
+            )
+            return null
         }
+
+        val assessmentModel = ModelFactory.createDefaultModel()
+        assessmentModel.addDatasetAssessment(assessmentResource, datasetResource)
+        assessmentModel.addComplianceQualityMeasurement(
+            assessmentResource,
+            datasetResource,
+            validationReport.conforms()
+        )
+
+        val mqaEvent = MQAEvent(
+            MQAEventType.DCAT_COMPLIANCE_CHECKED,
+            datasetEvent.fdkId,
+            assessmentModel.writeToString(Lang.TURTLE),
+            datasetEvent.timestamp
+        )
+
+        LOGGER.debug("{}", mqaEvent)
+        return mqaEvent
     }
 
     companion object {

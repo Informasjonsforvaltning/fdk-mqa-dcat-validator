@@ -25,21 +25,12 @@ spring:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     properties:
       schema.registry.url: ${KAFKA_SCHEMA_REGISTRY:http://localhost:8081}
-      specific.avro.reader: true
-      auto.register.schemas: false
-      use.latest.version: true
-      value.subject.name.strategy: io.confluent.kafka.serializers.subject.RecordNameStrategy
-      key.subject.name.strategy: io.confluent.kafka.serializers.subject.RecordNameStrategy
-    consumer:
-      auto-offset-reset: earliest
-      enable-auto-commit: false
-      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
-      properties:
-        max.partition.fetch.bytes: 2097152
-    producer:
-      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
-    listener:
-      ack-mode: manual_immediate
+application:
+  kafka:
+    group-id: fdk-mqa-dcat-validator
+    topics:
+      dataset-events: mqa-dataset-events
+      mqa-events: mqa-events
 ---
 spring:
   config.activate.on-profile: develop

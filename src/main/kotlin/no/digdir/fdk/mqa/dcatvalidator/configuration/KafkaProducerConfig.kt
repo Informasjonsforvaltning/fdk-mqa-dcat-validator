@@ -18,15 +18,12 @@ open class KafkaProducerConfig(
 ) {
     @Bean
     open fun producerFactory(): ProducerFactory<String, MQAEvent> {
-        val props: MutableMap<String, Any> = HashMap()
-        props[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = bootstrapServers
-        props[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
-        props[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = KafkaAvroSerializer::class.java
-        props["schema.registry.url"] = schemaRegistryUrl
-        props["auto.register.schemas"] = false
-        props["use.latest.version"] = true
-        props["value.subject.name.strategy"] = "io.confluent.kafka.serializers.subject.RecordNameStrategy"
-        props["key.subject.name.strategy"] = "io.confluent.kafka.serializers.subject.RecordNameStrategy"
+        val props = mutableMapOf<String, Any>(
+            ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to bootstrapServers,
+            ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java,
+            ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to KafkaAvroSerializer::class.java,
+        )
+        props.putAll(KafkaAvroProperties.common(schemaRegistryUrl))
         return DefaultKafkaProducerFactory(props)
     }
 
