@@ -22,26 +22,26 @@ open class KafkaConsumerConfig(
     @param:Value("\${spring.kafka.properties.schema.registry.url}") private val schemaRegistryUrl: String,
     private val applicationKafkaProperties: ApplicationKafkaProperties,
 ) {
-
     @Bean
     open fun consumerFactory(): ConsumerFactory<String, DatasetEvent> {
-        val props = mutableMapOf<String, Any>(
-            ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to bootstrapServers,
-            ConsumerConfig.GROUP_ID_CONFIG to applicationKafkaProperties.groupId,
-            ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
-            ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to KafkaAvroDeserializer::class.java,
-            ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "earliest",
-            ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to false,
-            ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG to 2097152,
-            "specific.avro.reader" to true,
-        )
+        val props =
+            mutableMapOf<String, Any>(
+                ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to bootstrapServers,
+                ConsumerConfig.GROUP_ID_CONFIG to applicationKafkaProperties.groupId,
+                ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
+                ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to KafkaAvroDeserializer::class.java,
+                ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "earliest",
+                ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to false,
+                ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG to 2097152,
+                "specific.avro.reader" to true,
+            )
         props.putAll(KafkaAvroProperties.common(schemaRegistryUrl))
         return DefaultKafkaConsumerFactory(props)
     }
 
     @Bean
     open fun kafkaListenerContainerFactory(
-        consumerFactory: ConsumerFactory<String, DatasetEvent>
+        consumerFactory: ConsumerFactory<String, DatasetEvent>,
     ): ConcurrentKafkaListenerContainerFactory<String, DatasetEvent> {
         val factory = ConcurrentKafkaListenerContainerFactory<String, DatasetEvent>()
         factory.setConsumerFactory(consumerFactory)

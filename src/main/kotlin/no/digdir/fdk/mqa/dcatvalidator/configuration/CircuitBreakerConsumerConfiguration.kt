@@ -17,11 +17,11 @@ import java.time.Duration
 open class CircuitBreakerConsumerConfiguration(
     private val kafkaManager: KafkaManager,
 ) {
-
     @Bean
     open fun circuitBreakerRegistry(): CircuitBreakerRegistry {
         val defaultConfig =
-            CircuitBreakerConfig.custom()
+            CircuitBreakerConfig
+                .custom()
                 .slidingWindowType(CircuitBreakerConfig.SlidingWindowType.COUNT_BASED)
                 .slidingWindowSize(10)
                 .failureRateThreshold(50f)
@@ -36,16 +36,15 @@ open class CircuitBreakerConsumerConfiguration(
     }
 
     private fun attachListener(registry: CircuitBreakerRegistry) {
-        registry.circuitBreaker(MQA_DATASET_CIRCUIT_BREAKER_ID)
+        registry
+            .circuitBreaker(MQA_DATASET_CIRCUIT_BREAKER_ID)
             .eventPublisher
             .onStateTransition { event: CircuitBreakerOnStateTransitionEvent ->
                 handleStateTransition(event)
             }
     }
 
-    private fun handleStateTransition(
-        event: CircuitBreakerOnStateTransitionEvent,
-    ) {
+    private fun handleStateTransition(event: CircuitBreakerOnStateTransitionEvent) {
         LOGGER.debug("Handling state transition in circuit breaker {}", event)
         when (event.stateTransition) {
             StateTransition.CLOSED_TO_OPEN,
@@ -65,7 +64,9 @@ open class CircuitBreakerConsumerConfiguration(
                 kafkaManager.resume(KafkaDatasetEventConsumer.MQA_DATASET_LISTENER_ID)
             }
 
-            else -> throw IllegalStateException("Unknown transition state: " + event.stateTransition)
+            else -> {
+                throw IllegalStateException("Unknown transition state: " + event.stateTransition)
+            }
         }
     }
 

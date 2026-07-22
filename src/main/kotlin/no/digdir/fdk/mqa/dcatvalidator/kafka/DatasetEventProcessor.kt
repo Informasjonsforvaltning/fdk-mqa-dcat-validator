@@ -32,13 +32,14 @@ class DatasetEventProcessor(
             }
 
             try {
-                val elapsed = measureTimeMillis {
-                    val mqaEvent = dcatComplianceService.validateDcatCompliance(event)
-                    if (mqaEvent != null) {
-                        LOGGER.debug("Send MQAEvent with quality measurement - fdkId: {}", event.fdkId)
-                        kafkaProducer.sendMQAEvent(mqaEvent)
+                val elapsed =
+                    measureTimeMillis {
+                        val mqaEvent = dcatComplianceService.validateDcatCompliance(event)
+                        if (mqaEvent != null) {
+                            LOGGER.debug("Send MQAEvent with quality measurement - fdkId: {}", event.fdkId)
+                            kafkaProducer.sendMQAEvent(mqaEvent)
+                        }
                     }
-                }
                 recordSuccess(elapsed)
             } catch (e: Exception) {
                 LOGGER.error("Error processing message: {}", e.message)

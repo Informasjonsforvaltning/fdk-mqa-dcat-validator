@@ -19,7 +19,6 @@ import kotlin.test.assertNull
 
 @Tag("unit")
 class DcatComplianceServiceTest {
-
     private val dcatComplianceService = DcatComplianceService()
 
     @ParameterizedTest
@@ -32,12 +31,13 @@ class DcatComplianceServiceTest {
         val datasetEventModel = TestData.loadTestModel(datasetEventPath)
         val expectedMqaEventModel = TestData.loadTestModel(expectedMqaEventPath)
 
-        val datasetEvent = DatasetEvent(
-            DatasetEventType.DATASET_HARVESTED,
-            "1234",
-            datasetEventModel.writeToString(Lang.TURTLE),
-            System.currentTimeMillis()
-        )
+        val datasetEvent =
+            DatasetEvent(
+                DatasetEventType.DATASET_HARVESTED,
+                "1234",
+                datasetEventModel.writeToString(Lang.TURTLE),
+                System.currentTimeMillis(),
+            )
 
         val mqaEvent = dcatComplianceService.validateDcatCompliance(datasetEvent)!!
         val actualMqaEventModel = loadModel(mqaEvent.graph.toString())
@@ -55,21 +55,23 @@ class DcatComplianceServiceTest {
     fun complianceValidationReturnsNullWhenDatasetEventIsInvalid() {
         val datasetEventModel = TestData.loadTestModel(TestData.INVALID_DATASET_EVENT)
 
-        val datasetEvent = DatasetEvent(
-            DatasetEventType.DATASET_HARVESTED,
-            "1234",
-            datasetEventModel.writeToString(Lang.TURTLE),
-            System.currentTimeMillis()
-        )
+        val datasetEvent =
+            DatasetEvent(
+                DatasetEventType.DATASET_HARVESTED,
+                "1234",
+                datasetEventModel.writeToString(Lang.TURTLE),
+                System.currentTimeMillis(),
+            )
 
         assertNull(dcatComplianceService.validateDcatCompliance(datasetEvent))
     }
 
     companion object {
         @JvmStatic
-        fun complianceCases() = listOf(
-            Arguments.of(TestData.COMPLIANT_DATASET_EVENT, TestData.COMPLIANT_MQA_EVENT, true),
-            Arguments.of(TestData.NON_COMPLIANT_DATASET_EVENT, TestData.NON_COMPLIANT_MQA_EVENT, false),
-        )
+        fun complianceCases() =
+            listOf(
+                Arguments.of(TestData.COMPLIANT_DATASET_EVENT, TestData.COMPLIANT_MQA_EVENT, true),
+                Arguments.of(TestData.NON_COMPLIANT_DATASET_EVENT, TestData.NON_COMPLIANT_MQA_EVENT, false),
+            )
     }
 }
