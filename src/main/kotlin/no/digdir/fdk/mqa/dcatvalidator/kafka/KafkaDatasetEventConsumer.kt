@@ -9,16 +9,19 @@ import java.time.Duration
 
 @Component
 class KafkaDatasetEventConsumer(
-    private val datasetEventProcessor: DatasetEventProcessor
+    private val datasetEventProcessor: DatasetEventProcessor,
 ) {
     @KafkaListener(
         topics = ["\${application.kafka.topics.dataset-events}"],
         groupId = "\${application.kafka.group-id}",
         concurrency = "4",
         containerFactory = "kafkaListenerContainerFactory",
-        id = MQA_DATASET_LISTENER_ID
+        id = MQA_DATASET_LISTENER_ID,
     )
-    fun listen(record: ConsumerRecord<String, DatasetEvent>, ack: Acknowledgment) {
+    fun listen(
+        record: ConsumerRecord<String, DatasetEvent>,
+        ack: Acknowledgment,
+    ) {
         try {
             datasetEventProcessor.process(record)
             ack.acknowledge()

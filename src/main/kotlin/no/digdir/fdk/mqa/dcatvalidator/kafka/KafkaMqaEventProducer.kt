@@ -14,20 +14,21 @@ class KafkaMqaEventProducer(
     private val applicationKafkaProperties: ApplicationKafkaProperties,
 ) {
     fun sendMQAEvent(mqaEvent: MQAEvent) {
-        kafkaTemplate.send(
-            applicationKafkaProperties.topics.mqaEvents,
-            mqaEvent.fdkId.toString(),
-            mqaEvent
-        ).handle { result, exception ->
-            if (exception != null) {
-                LOGGER.error("Error sending MQA event: {}", exception.message)
-                Metrics.counter("produced_messages", "status", "error").increment()
-            } else {
-                LOGGER.debug("MQA event sent - offset: {}", result.recordMetadata.offset())
-                Metrics.counter("produced_messages", "status", "success").increment()
+        kafkaTemplate
+            .send(
+                applicationKafkaProperties.topics.mqaEvents,
+                mqaEvent.fdkId.toString(),
+                mqaEvent,
+            ).handle { result, exception ->
+                if (exception != null) {
+                    LOGGER.error("Error sending MQA event: {}", exception.message)
+                    Metrics.counter("produced_messages", "status", "error").increment()
+                } else {
+                    LOGGER.debug("MQA event sent - offset: {}", result.recordMetadata.offset())
+                    Metrics.counter("produced_messages", "status", "success").increment()
+                }
+                null
             }
-            null
-        }
     }
 
     companion object {

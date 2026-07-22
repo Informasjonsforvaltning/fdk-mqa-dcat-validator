@@ -11,8 +11,9 @@ object TestData {
     const val INVALID_DATASET_EVENT = "/invalid-dataset-event.ttl"
 
     fun loadTestModel(path: String): Model {
-        val resource = javaClass.getResource(path)
-            ?: error("Unable to load test data: $path")
+        val resource =
+            javaClass.getResource(path)
+                ?: error("Unable to load test data: $path")
         return loadModel(resource.readText())
     }
 }

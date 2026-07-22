@@ -5,11 +5,11 @@ import org.apache.jena.rdf.model.Resource
 import org.apache.jena.rdf.model.ResourceFactory
 
 object DCATMQA {
-    const val uri = "https://data.norge.no/vocabulary/dcatno-mqa#"
+    const val URI = "https://data.norge.no/vocabulary/dcatno-mqa#"
 
-    val assessmentOf: Property = ResourceFactory.createProperty("${uri}assessmentOf")
-    val hasAssessment: Property = ResourceFactory.createProperty("${uri}hasAssessment")
-    val containsQualityMeasurement: Property = ResourceFactory.createProperty("${uri}containsQualityMeasurement")
-    val dcatApCompliance: Resource = ResourceFactory.createResource("${uri}dcatApCompliance")
-    val DatasetAssessment: Resource = ResourceFactory.createResource("${uri}DatasetAssessment")
+    val assessmentOf: Property = ResourceFactory.createProperty("${URI}assessmentOf")
+    val hasAssessment: Property = ResourceFactory.createProperty("${URI}hasAssessment")
+    val containsQualityMeasurement: Property = ResourceFactory.createProperty("${URI}containsQualityMeasurement")
+    val dcatApCompliance: Resource = ResourceFactory.createResource("${URI}dcatApCompliance")
+    val DatasetAssessment: Resource = ResourceFactory.createResource("${URI}DatasetAssessment")
 }

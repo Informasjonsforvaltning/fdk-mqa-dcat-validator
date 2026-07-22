@@ -18,17 +18,17 @@ open class KafkaProducerConfig(
 ) {
     @Bean
     open fun producerFactory(): ProducerFactory<String, MQAEvent> {
-        val props = mutableMapOf<String, Any>(
-            ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to bootstrapServers,
-            ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java,
-            ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to KafkaAvroSerializer::class.java,
-        )
+        val props =
+            mutableMapOf<String, Any>(
+                ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to bootstrapServers,
+                ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java,
+                ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to KafkaAvroSerializer::class.java,
+            )
         props.putAll(KafkaAvroProperties.common(schemaRegistryUrl))
         return DefaultKafkaProducerFactory(props)
     }
 
     @Bean
-    open fun kafkaTemplate(producerFactory: ProducerFactory<String, MQAEvent>): KafkaTemplate<String, MQAEvent> {
-        return KafkaTemplate(producerFactory)
-    }
+    open fun kafkaTemplate(producerFactory: ProducerFactory<String, MQAEvent>): KafkaTemplate<String, MQAEvent> =
+        KafkaTemplate(producerFactory)
 }

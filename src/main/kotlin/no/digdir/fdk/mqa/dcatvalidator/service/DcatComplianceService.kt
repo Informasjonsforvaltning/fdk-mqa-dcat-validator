@@ -1,6 +1,13 @@
 package no.digdir.fdk.mqa.dcatvalidator.service
 
-import no.digdir.fdk.mqa.dcatvalidator.rdf.*
+import no.digdir.fdk.mqa.dcatvalidator.rdf.addComplianceQualityMeasurement
+import no.digdir.fdk.mqa.dcatvalidator.rdf.addDatasetAssessment
+import no.digdir.fdk.mqa.dcatvalidator.rdf.getAssessmentResource
+import no.digdir.fdk.mqa.dcatvalidator.rdf.getDatasetResource
+import no.digdir.fdk.mqa.dcatvalidator.rdf.loadModel
+import no.digdir.fdk.mqa.dcatvalidator.rdf.parseShapes
+import no.digdir.fdk.mqa.dcatvalidator.rdf.validate
+import no.digdir.fdk.mqa.dcatvalidator.rdf.writeToString
 import no.fdk.mqa.DatasetEvent
 import no.fdk.mqa.MQAEvent
 import no.fdk.mqa.MQAEventType
@@ -13,10 +20,10 @@ import org.springframework.stereotype.Service
 
 @Service
 class DcatComplianceService {
-
     private val shapes: Shapes by lazy {
-        val shapesResource = javaClass.getResource(DCAT_AP_NO_SHAPES)
-            ?: throw IllegalStateException("Unable to load shapes from $DCAT_AP_NO_SHAPES")
+        val shapesResource =
+            javaClass.getResource(DCAT_AP_NO_SHAPES)
+                ?: throw IllegalStateException("Unable to load shapes from $DCAT_AP_NO_SHAPES")
         parseShapes(loadModel(shapesResource.readText()).graph)
     }
 
@@ -43,7 +50,7 @@ class DcatComplianceService {
         if (datasetResource == null) {
             LOGGER.warn(
                 "Model does not contain resource of type Dataset, skipping message - fdkId: {}",
-                datasetEvent.fdkId
+                datasetEvent.fdkId,
             )
             return null
         }
@@ -52,7 +59,7 @@ class DcatComplianceService {
         if (assessmentResource == null) {
             LOGGER.warn(
                 "Model does not contain resource of type Assessment, skipping message - fdkId: {}",
-                datasetEvent.fdkId
+                datasetEvent.fdkId,
             )
             return null
         }
@@ -62,15 +69,16 @@ class DcatComplianceService {
         assessmentModel.addComplianceQualityMeasurement(
             assessmentResource,
             datasetResource,
-            validationReport.conforms()
+            validationReport.conforms(),
         )
 
-        val mqaEvent = MQAEvent(
-            MQAEventType.DCAT_COMPLIANCE_CHECKED,
-            datasetEvent.fdkId,
-            assessmentModel.writeToString(Lang.TURTLE),
-            datasetEvent.timestamp
-        )
+        val mqaEvent =
+            MQAEvent(
+                MQAEventType.DCAT_COMPLIANCE_CHECKED,
+                datasetEvent.fdkId,
+                assessmentModel.writeToString(Lang.TURTLE),
+                datasetEvent.timestamp,
+            )
 
         LOGGER.debug("{}", mqaEvent)
         return mqaEvent
