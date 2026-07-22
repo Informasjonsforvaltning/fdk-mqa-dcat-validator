@@ -1,13 +1,11 @@
-package no.digdir.fdk.rdf.parse.eventpublisher.kafka
+package no.digdir.fdk.mqa.dcatvalidator.kafka
 
 import io.github.resilience4j.circuitbreaker.CircuitBreaker
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import no.digdir.fdk.mqa.dcatvalidator.kafka.KafkaDatasetEventCircuitBreaker
-import no.digdir.fdk.mqa.dcatvalidator.kafka.KafkaDatasetEventConsumer
-import no.digdir.fdk.mqa.dcatvalidator.kafka.KafkaMqaEventProducer
+import no.digdir.fdk.mqa.dcatvalidator.configuration.ApplicationKafkaProperties
 import no.digdir.fdk.mqa.dcatvalidator.service.DcatComplianceService
 import no.fdk.mqa.DatasetEvent
 import no.fdk.mqa.DatasetEventType
@@ -15,39 +13,52 @@ import no.fdk.mqa.MQAEvent
 import no.fdk.mqa.MQAEventType
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.support.Acknowledgment
-import org.springframework.test.context.ActiveProfiles
 import java.time.Duration
 import java.util.concurrent.CompletableFuture
 import kotlin.test.assertEquals
 
-@ActiveProfiles("test")
 class KafkaDatasetEventConsumerTest {
     private val dcatComplianceService: DcatComplianceService = mockk()
     private val kafkaTemplate: KafkaTemplate<String, MQAEvent> = mockk()
     private val ack: Acknowledgment = mockk()
-    private val kafkaMqaEventProducer = KafkaMqaEventProducer(kafkaTemplate)
-    private val circuitBreaker = KafkaDatasetEventCircuitBreaker(dcatComplianceService, kafkaMqaEventProducer, CircuitBreaker.ofDefaults("test-cb"))
-    private val kafkaDatasetEventConsumer = KafkaDatasetEventConsumer(circuitBreaker)
+    private val applicationKafkaProperties = ApplicationKafkaProperties(
+        groupId = "fdk-mqa-dcat-validator",
+        topics = ApplicationKafkaProperties.Topics(
+            datasetEvents = "mqa-dataset-events",
+            mqaEvents = "mqa-events",
+        )
+    )
+    private val kafkaMqaEventProducer = KafkaMqaEventProducer(kafkaTemplate, applicationKafkaProperties)
+    private val datasetEventProcessor = DatasetEventProcessor(
+        dcatComplianceService,
+        kafkaMqaEventProducer,
+        CircuitBreaker.ofDefaults("test-cb")
+    )
+    private val kafkaDatasetEventConsumer = KafkaDatasetEventConsumer(datasetEventProcessor)
 
-    @Test
-    fun `listen should produce a mqa event with valid dcat`() {
+    @ParameterizedTest
+    @ValueSource(strings = ["fdk-id-valid", "fdk-id-invalid"])
+    fun `listen should produce a mqa event for harvested datasets`(fdkId: String) {
         val timestamp = System.currentTimeMillis()
-        val validDcatMQAEvent = MQAEvent(
+        val assessmentGraph = "assessment-graph-$fdkId"
+        val mqaEvent = MQAEvent(
             MQAEventType.DCAT_COMPLIANCE_CHECKED,
-            "fdk-id-valid",
-            "assessment-graph-valid",
+            fdkId,
+            assessmentGraph,
             timestamp
         )
-        every { dcatComplianceService.validateDcatCompliance(any()) } returns validDcatMQAEvent
+        every { dcatComplianceService.validateDcatCompliance(any()) } returns mqaEvent
         every { kafkaTemplate.send(any(), any(), any()) } returns CompletableFuture()
         every { ack.acknowledge() } returns Unit
         every { ack.nack(Duration.ZERO) } returns Unit
 
-        val datasetEvent = DatasetEvent(DatasetEventType.DATASET_HARVESTED, "fdk-id-valid", "uri", timestamp)
+        val datasetEvent = DatasetEvent(DatasetEventType.DATASET_HARVESTED, fdkId, "uri", timestamp)
         kafkaDatasetEventConsumer.listen(
-            record = ConsumerRecord("dataset-events", 0, 0, "fdk-id-valid", datasetEvent),
+            record = ConsumerRecord("dataset-events", 0, 0, fdkId, datasetEvent),
             ack = ack
         )
 
@@ -59,44 +70,7 @@ class KafkaDatasetEventConsumerTest {
             }, withArg {
                 assertEquals(datasetEvent.fdkId, it.fdkId)
                 assertEquals(MQAEventType.DCAT_COMPLIANCE_CHECKED, it.type)
-                assertEquals("assessment-graph-valid", it.graph)
-                assertEquals(datasetEvent.timestamp, it.timestamp)
-            })
-            ack.acknowledge()
-        }
-        confirmVerified(kafkaTemplate, ack)
-     }
-
-    @Test
-    fun `listen should produce a mqa event with invalid dcat`() {
-        val timestamp = System.currentTimeMillis()
-        val invalidDcatMQAEvent = MQAEvent(
-            MQAEventType.DCAT_COMPLIANCE_CHECKED,
-            "fdk-id-invalid",
-            "assessment-graph-invalid",
-            timestamp
-        )
-
-        every { dcatComplianceService.validateDcatCompliance(any()) } returns invalidDcatMQAEvent
-        every { kafkaTemplate.send(any(), any(), any()) } returns CompletableFuture()
-        every { ack.acknowledge() } returns Unit
-        every { ack.nack(Duration.ZERO) } returns Unit
-
-        val datasetEvent = DatasetEvent(DatasetEventType.DATASET_HARVESTED, "fdk-id-invalid", "uri", timestamp)
-        kafkaDatasetEventConsumer.listen(
-            record = ConsumerRecord("dataset-events", 0, 0, "fdk-id-invalid", datasetEvent),
-            ack = ack
-        )
-
-        verify {
-            kafkaTemplate.send(withArg {
-                assertEquals("mqa-events", it)
-            }, withArg {
-                assertEquals(datasetEvent.fdkId, it)
-            }, withArg {
-                assertEquals(datasetEvent.fdkId, it.fdkId)
-                assertEquals(MQAEventType.DCAT_COMPLIANCE_CHECKED, it.type)
-                assertEquals("assessment-graph-invalid", it.graph)
+                assertEquals(assessmentGraph, it.graph)
                 assertEquals(datasetEvent.timestamp, it.timestamp)
             })
             ack.acknowledge()
@@ -109,7 +83,12 @@ class KafkaDatasetEventConsumerTest {
         every { dcatComplianceService.validateDcatCompliance(any()) } throws RuntimeException("Error validating DCAT compliance")
         every { ack.nack(Duration.ZERO) } returns Unit
 
-        val datasetEvent = DatasetEvent(DatasetEventType.DATASET_HARVESTED, "fdk-id-invalid", "uri", System.currentTimeMillis())
+        val datasetEvent = DatasetEvent(
+            DatasetEventType.DATASET_HARVESTED,
+            "fdk-id-invalid",
+            "uri",
+            System.currentTimeMillis()
+        )
         kafkaDatasetEventConsumer.listen(
             record = ConsumerRecord("dataset-events", 0, 0, "fdk-id-invalid", datasetEvent),
             ack = ack
@@ -120,5 +99,4 @@ class KafkaDatasetEventConsumerTest {
         verify(exactly = 0) { ack.acknowledge() }
         confirmVerified(kafkaTemplate, ack)
     }
-
 }
