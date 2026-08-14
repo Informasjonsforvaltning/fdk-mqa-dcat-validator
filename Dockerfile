@@ -6,7 +6,7 @@ COPY kafka ./kafka
 RUN mvn clean package --no-transfer-progress -DskipTests
 RUN mvn versions:display-dependency-updates --no-transfer-progress
 
-FROM eclipse-temurin:21-jre-jammy
+FROM eclipse-temurin:21-jre-noble
 ENV TZ=Europe/Oslo
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 WORKDIR /app
