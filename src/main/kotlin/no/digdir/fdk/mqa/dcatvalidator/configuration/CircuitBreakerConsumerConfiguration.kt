@@ -14,9 +14,7 @@ import org.springframework.context.annotation.Configuration
 import java.time.Duration
 
 @Configuration
-open class CircuitBreakerConsumerConfiguration(
-    private val kafkaManager: KafkaManager,
-) {
+open class CircuitBreakerConsumerConfiguration(private val kafkaManager: KafkaManager) {
     @Bean
     open fun circuitBreakerRegistry(): CircuitBreakerRegistry {
         val defaultConfig =

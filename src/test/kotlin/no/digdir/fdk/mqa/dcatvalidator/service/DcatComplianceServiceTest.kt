@@ -68,10 +68,9 @@ class DcatComplianceServiceTest {
 
     companion object {
         @JvmStatic
-        fun complianceCases() =
-            listOf(
-                Arguments.of(TestData.COMPLIANT_DATASET_EVENT, TestData.COMPLIANT_MQA_EVENT, true),
-                Arguments.of(TestData.NON_COMPLIANT_DATASET_EVENT, TestData.NON_COMPLIANT_MQA_EVENT, false),
-            )
+        fun complianceCases() = listOf(
+            Arguments.of(TestData.COMPLIANT_DATASET_EVENT, TestData.COMPLIANT_MQA_EVENT, true),
+            Arguments.of(TestData.NON_COMPLIANT_DATASET_EVENT, TestData.NON_COMPLIANT_MQA_EVENT, false),
+        )
     }
 }

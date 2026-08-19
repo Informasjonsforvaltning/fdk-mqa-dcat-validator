@@ -13,9 +13,8 @@ fun loadModel(graph: String): Model {
     return model
 }
 
-fun Model.writeToString(lang: Lang): String =
-    ByteArrayOutputStream().use { out ->
-        write(out, lang.name)
-        out.flush()
-        out.toString(StandardCharsets.UTF_8)
-    }
+fun Model.writeToString(lang: Lang): String = ByteArrayOutputStream().use { out ->
+    write(out, lang.name)
+    out.flush()
+    out.toString(StandardCharsets.UTF_8)
+}
