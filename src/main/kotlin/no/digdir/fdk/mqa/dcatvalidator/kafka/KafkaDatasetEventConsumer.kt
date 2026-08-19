@@ -8,9 +8,7 @@ import org.springframework.stereotype.Component
 import java.time.Duration
 
 @Component
-class KafkaDatasetEventConsumer(
-    private val datasetEventProcessor: DatasetEventProcessor,
-) {
+class KafkaDatasetEventConsumer(private val datasetEventProcessor: DatasetEventProcessor) {
     @KafkaListener(
         topics = ["\${application.kafka.topics.dataset-events}"],
         groupId = "\${application.kafka.group-id}",
@@ -18,10 +16,7 @@ class KafkaDatasetEventConsumer(
         containerFactory = "kafkaListenerContainerFactory",
         id = MQA_DATASET_LISTENER_ID,
     )
-    fun listen(
-        record: ConsumerRecord<String, DatasetEvent>,
-        ack: Acknowledgment,
-    ) {
+    fun listen(record: ConsumerRecord<String, DatasetEvent>, ack: Acknowledgment) {
         try {
             datasetEventProcessor.process(record)
             ack.acknowledge()

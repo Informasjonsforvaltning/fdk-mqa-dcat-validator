@@ -29,10 +29,10 @@ class KafkaDatasetEventConsumerTest {
         ApplicationKafkaProperties(
             groupId = "fdk-mqa-dcat-validator",
             topics =
-                ApplicationKafkaProperties.Topics(
-                    datasetEvents = "mqa-dataset-events",
-                    mqaEvents = "mqa-events",
-                ),
+            ApplicationKafkaProperties.Topics(
+                datasetEvents = "mqa-dataset-events",
+                mqaEvents = "mqa-events",
+            ),
         )
     private val kafkaMqaEventProducer = KafkaMqaEventProducer(kafkaTemplate, applicationKafkaProperties)
     private val datasetEventProcessor =
