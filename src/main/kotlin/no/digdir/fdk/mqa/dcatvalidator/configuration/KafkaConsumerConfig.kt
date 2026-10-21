@@ -2,7 +2,9 @@ package no.digdir.fdk.mqa.dcatvalidator.configuration
 
 import io.confluent.kafka.serializers.KafkaAvroDeserializer
 import no.fdk.mqa.DatasetEvent
+import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.consumer.ConsumerConfig
+import org.apache.kafka.common.config.SaslConfigs
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -13,12 +15,16 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
 import org.springframework.kafka.core.ConsumerFactory
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory
 import org.springframework.kafka.listener.ContainerProperties
+import java.time.Duration
 
 @EnableKafka
 @Configuration
 @EnableConfigurationProperties(ApplicationKafkaProperties::class)
 open class KafkaConsumerConfig(
     @param:Value("\${spring.kafka.bootstrap-servers}") private val bootstrapServers: String,
+    @param:Value("\${spring.kafka.properties.security.protocol}") private val securityProtocol: String,
+    @param:Value("\${spring.kafka.properties.sasl.mechanism}") private val saslMechanism: String,
+    @param:Value("\${spring.kafka.properties.sasl.jaas.config}") private val saslJaasConfig: String,
     @param:Value("\${spring.kafka.properties.schema.registry.url}") private val schemaRegistryUrl: String,
     private val applicationKafkaProperties: ApplicationKafkaProperties,
 ) {
@@ -27,6 +33,9 @@ open class KafkaConsumerConfig(
         val props =
             mutableMapOf<String, Any>(
                 ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to bootstrapServers,
+                CommonClientConfigs.SECURITY_PROTOCOL_CONFIG to securityProtocol,
+                SaslConfigs.SASL_MECHANISM to saslMechanism,
+                SaslConfigs.SASL_JAAS_CONFIG to saslJaasConfig,
                 ConsumerConfig.GROUP_ID_CONFIG to applicationKafkaProperties.groupId,
                 ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
                 ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to KafkaAvroDeserializer::class.java,
@@ -46,6 +55,8 @@ open class KafkaConsumerConfig(
         val factory = ConcurrentKafkaListenerContainerFactory<String, DatasetEvent>()
         factory.setConsumerFactory(consumerFactory)
         factory.containerProperties.ackMode = ContainerProperties.AckMode.MANUAL_IMMEDIATE
+        // Keep retrying instead of stopping the listeners for good on an auth failure.
+        factory.containerProperties.setAuthExceptionRetryInterval(Duration.ofSeconds(30))
         return factory
     }
 }
